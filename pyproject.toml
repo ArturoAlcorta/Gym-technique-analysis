@@ -1,0 +1,52 @@
+[project]
+name = "gym-technique-analyzer"
+version = "0.1.0"
+description = "Lifting technique analysis from a phone video: pose estimation, rep counting, per-rep metrics and an optional DTW comparison against reference lifters"
+requires-python = ">=3.12"
+dependencies = [
+    # web
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.12",
+    "pydantic-settings>=2.5",
+    # queue + storage
+    "celery>=5.4",
+    "redis>=5.0",
+    "sqlalchemy>=2.0",
+    "psycopg2-binary>=2.9",
+    # computer vision / analysis
+    "torch>=2.5",
+    "torchvision>=0.20",
+    "transformers>=4.46",
+    "accelerate>=1.3",
+    "ultralytics>=8.3",
+    "opencv-python-headless>=4.10",
+    "numpy>=1.26",
+    "scipy>=1.14",
+    "dtw-python>=1.3",
+    "pillow>=10.0",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+# Two roots: the web layer (`app`) at the project root, the analysis engine
+# (`services`) under src/.
+[tool.setuptools.packages.find]
+where = ["src", "."]
+include = ["services*", "app*"]
+
+# Jinja templates and the frontend assets are resolved relative to the installed
+# `app` package, so they have to travel with it into the wheel.
+[tool.setuptools.package-data]
+app = ["templates/*.html", "templates/**/*.html", "static/**/*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]

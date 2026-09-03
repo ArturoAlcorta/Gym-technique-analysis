@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "exercise_id": 6,
+    "n_reps": 12,
+    "source_reps": [
+      "artu_rep_001.json",
+      "artu_rep_002.json",
+      "artu_rep_003.json",
+      "artu_rep_004.json",
+      "artu_rep_005.json",
+      "artu_rep_006.json",
+      "gon_rep_001.json",
+      "gon_rep_002.json",
+      "gon_rep_003.json",
+      "gon_rep_004.json",
+      "gon_rep_005.json",
+      "gon_rep_006.json"
+    ],
+    "margins": {
+      "spine_flex_delta": 4.0,
+      "hip_knee_rom_ratio": 1.0,
+      "hip_knee_lag_pct": 3.0,
+      "marp_deg": 10.0
+    }
+  },
+  "metric_ranges": {
+    "spine_flex_delta": {
+      "low": 10.19182,
+      "high": 44.08068,
+      "mean": 30.0324,
+      "n": 12
+    },
+    "hip_knee_rom_ratio": {
+      "low": -0.06769,
+      "high": 2.12398,
+      "mean": 1.03844,
+      "n": 12
+    },
+    "hip_knee_lag_pct": {
+      "low": -3.0,
+      "high": 3.0,
+      "mean": 0.0,
+      "n": 12
+    },
+    "marp_deg": {
+      "low": -5.989,
+      "high": 39.734,
+      "mean": 12.01942,
+      "n": 12
+    }
+  }
+}

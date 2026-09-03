@@ -1,0 +1,29 @@
+<div id="row-{{ analysis.id }}" class="analysis-item bg-card border border-gray-700 rounded-xl p-4 cursor-pointer hover:border-gray-500 active:scale-[0.99] transition-all"
+     hx-get="/analyses/{{ analysis.id }}" hx-target="#analysis-detail-panel" hx-swap="innerHTML"
+     hx-on:click="document.querySelectorAll('.analysis-item').forEach(function(el){ el.classList.remove('border-primary'); el.classList.add('border-gray-700'); }); this.classList.remove('border-gray-700'); this.classList.add('border-primary');">
+  <div class="flex items-center justify-between gap-2">
+    <p class="text-white text-sm font-medium truncate">{{ analysis.name }}</p>
+    <span id="status-{{ analysis.id }}" class="text-xs px-2 py-1 rounded-full font-medium shrink-0
+        {% if analysis.status == 'done' %}bg-green-500/20 text-green-400
+        {% elif analysis.status == 'error' %}bg-red-500/20 text-red-400
+        {% else %}bg-yellow-500/20 text-yellow-400{% endif %}">
+      {{ analysis.stage if analysis.status == "processing" and analysis.stage else analysis.status }}
+    </span>
+  </div>
+  <p class="text-gray-500 text-xs mt-1">
+    {{ exercise_name(analysis.exercise) }}{% if analysis.weight %} · {{ analysis.weight }} kg{% endif %}
+    {%- if analysis.total_reps %} · {{ analysis.total_reps }} reps{% endif %}
+    {%- if analysis.compare_dtw %} · <span class="text-primary">DTW</span>{% endif %}
+  </p>
+</div>
+{% if analysis.status in ("pending", "processing") %}
+<script>
+  watchAnalysis("{{ analysis.id }}", function (payload) {
+    var badge = document.getElementById("status-{{ analysis.id }}");
+    if (badge) badge.textContent = payload.stage || payload.status;
+    if (payload.status === "done" || payload.status === "error") {
+      htmx.ajax("GET", "/analyses/{{ analysis.id }}/row", {target: "#row-{{ analysis.id }}", swap: "outerHTML"});
+    }
+  });
+</script>
+{% endif %}

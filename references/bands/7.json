@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "exercise_id": 7,
+    "n_reps": 5,
+    "source_reps": [
+      "artu_rep_001.json",
+      "artu_rep_002.json",
+      "artu_rep_003.json",
+      "artu_rep_004.json",
+      "artu_rep_005.json"
+    ],
+    "margins": {
+      "spine_flex_delta": 4.0,
+      "hip_knee_rom_ratio": 1.0,
+      "hip_knee_lag_pct": 3.0,
+      "marp_deg": 10.0
+    }
+  },
+  "metric_ranges": {
+    "spine_flex_delta": {
+      "low": 4.1942,
+      "high": 16.72858,
+      "mean": 10.80267,
+      "n": 5
+    },
+    "hip_knee_rom_ratio": {
+      "low": 4.79995,
+      "high": 8.53829,
+      "mean": 6.83122,
+      "n": 5
+    },
+    "hip_knee_lag_pct": {
+      "low": -3.99,
+      "high": 3.0,
+      "mean": -0.198,
+      "n": 5
+    },
+    "marp_deg": {
+      "low": 19.691,
+      "high": 55.09,
+      "mean": 39.6006,
+      "n": 5
+    }
+  }
+}

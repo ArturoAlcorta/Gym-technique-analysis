@@ -1,0 +1,74 @@
+# Runs against the infrastructure that is already up on this host:
+#   - Postgres: trAIner's `trainer-db` (on its own compose network), where this
+#     app creates and owns the `technique` schema — nothing outside it is touched.
+#   - Redis: the shared `redis` on `infra_network`, on databases 3/4/5 so it
+#     never collides with what trAIner keeps there.
+# Both networks are external: bring them up with their own projects first.
+
+x-runtime-env: &runtime-env
+  # Password comes from this project's .env (see .env.example); it is the same
+  # POSTGRES_PASSWORD trAIner's compose uses. URL-encode it if it has @ : / ? #.
+  DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-arturo}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-trainer-db}:5432/${POSTGRES_DB:-trainer_db}
+  CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://redis:6379/3}
+  CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND:-redis://redis:6379/4}
+  REDIS_URL: ${REDIS_URL:-redis://redis:6379/5}
+  DATA_DIR: /srv/data
+  REFERENCES_DIR: /srv/references
+  YOLO_MODELS_DIR: /srv/models
+
+services:
+  api:
+    build: .
+    container_name: gym-ta-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      <<: *runtime-env
+    volumes:
+      - ./data:/srv/data
+      - ./references:/srv/references:ro
+      - ./models:/srv/models
+    networks:
+      - trainer_default
+      - infra_network
+
+  worker:
+    build: .
+    container_name: gym-ta-worker
+    restart: unless-stopped
+    # Concurrency 1: SynthPose is a ViT-Huge (~6-8 GB of VRAM per worker
+    # process), so a second concurrent job is the fastest way to run a
+    # consumer GPU out of memory. Raise it only if yours has the headroom.
+    command: celery -A app.celery_app worker --loglevel=info -Q technique --concurrency=1
+    environment:
+      <<: *runtime-env
+      DEVICE: ${DEVICE:-}
+    volumes:
+      - ./data:/srv/data
+      - ./references:/srv/references:ro
+      - ./models:/srv/models
+    networks:
+      - trainer_default
+      - infra_network
+    # SynthPose on CPU runs at ~1.9 frame/s on this host (a 477-frame clip takes
+    # over four minutes); on the RTX 3070 the same clip is ~16 s. Needs the
+    # nvidia-container-toolkit on the host. Comment this block out to fall back
+    # to CPU. Note that trAIner's `trainer-worker-gpu` reserves every GPU at
+    # concurrency 2 with the same ViT-Huge, and this card has 8 GB: if both
+    # analysers pick up a job at once they will fight over VRAM.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+networks:
+  # trAIner's compose network — this is where `trainer-db` lives.
+  trainer_default:
+    external: true
+  # Shared infrastructure network — this is where `redis` lives.
+  infra_network:
+    external: true

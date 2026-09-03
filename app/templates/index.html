@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-6">
+
+  <form class="bg-card border border-gray-700 rounded-2xl p-4 mb-6 flex flex-wrap gap-3 items-center"
+        hx-post="/analyses" hx-target="#analysis-list" hx-swap="afterbegin" hx-encoding="multipart/form-data"
+        hx-on::after-request="this.reset()">
+    <input type="file" name="video" accept="video/*" required
+           class="text-sm text-gray-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary file:text-white file:font-medium file:cursor-pointer hover:file:bg-orange-600 file:transition-colors cursor-pointer">
+    <input type="text" name="name" placeholder="Set name" required
+           class="bg-dark border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors">
+    <select name="exercise" required
+            class="bg-dark border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors">
+      {% for ex in exercises %}
+        <option value="{{ ex.slug }}">{{ ex.name }}</option>
+      {% endfor %}
+    </select>
+    <input type="number" step="0.5" name="weight" placeholder="Weight (kg)"
+           class="bg-dark border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors w-32">
+    <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer select-none"
+           title="Adds a DTW comparison of every rep against the reference lifters on file. Leave it off for a reference-free read of your own technique.">
+      <input type="checkbox" name="compare" value="true"
+             class="w-4 h-4 rounded border-gray-600 bg-dark text-primary focus:ring-primary focus:ring-offset-dark cursor-pointer">
+      Compare with references (DTW)
+    </label>
+    <button type="submit"
+            class="bg-primary hover:bg-orange-600 text-white font-bold px-5 py-2 rounded-lg transition-all transform active:scale-[0.98] ml-auto">
+      Analyze
+    </button>
+  </form>
+
+  <div class="flex gap-6 items-start">
+    <aside class="w-80 shrink-0 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto custom-scroll pr-1">
+      <div id="analysis-list" class="space-y-3">
+        {% for analysis in analyses %}
+          {% include "partials/analysis_row.html" %}
+        {% endfor %}
+      </div>
+    </aside>
+
+    <main id="analysis-detail-panel" class="flex-1 min-w-0 bg-card border border-gray-700 rounded-2xl p-6">
+      <p class="text-gray-500 text-sm">Upload a video or pick a set from the list.</p>
+    </main>
+  </div>
+</div>
+{% endblock %}

@@ -334,6 +334,34 @@ describes the same quantity.
   taken from one dominant side and mirrored, which is what the angled camera
   makes possible — and what lets bench press report L/R symmetry as a real
   measurement.
+- **The visible leg is picked by how long it projects, not by confidence.** The
+  DTW comparison reads one leg, and it has to be the leg the camera can see. The
+  near leg is closer to the lens, so perspective renders it larger while the far
+  one is smaller and partly hidden behind it: the median projected **shank**
+  length separates the two by 12–20% on real footage. The shank specifically,
+  because it holds its orientation through the whole movement in all three lifts,
+  so its projected length reflects distance to the camera and little else — the
+  femur does not (in an RDL the thighs stay near vertical and the two femurs came
+  out 0.6% apart, a coin flip), and the trunk is worse still at 0.6–6.4%, sitting
+  near the midline where perspective barely separates the sides.
+
+  Keypoint *confidence*, the obvious first choice, is not a proxy for visibility:
+  on one squat the model scored the occluded leg 10.6% higher than the visible
+  one. Worse, confidence was averaged over whatever frames it was handed, so the
+  same clip answered "left" over the whole video and "right" over five of its six
+  individual reps — meaning a submission was compared against reference reps cut
+  from *the same footage* leg-against-leg. Matching sides matters more than which
+  side wins: cross-matched, a rep scored 68 against itself; on the same leg, 100.
+- **Landmark choice is a fallback chain, not a contest.** SynthPose returns 52
+  keypoints: the first 17 are COCO, the remaining 35 anatomical markers. `L_Hip`
+  (COCO, id 11) is the hip joint centre and `l_ASIS` (id 29) the iliac spine,
+  several centimetres forward and above it — different points, not competing
+  estimates of one. Preferring whichever scored higher on a given frame swapped
+  between them mid-rep and put 47° steps into the hip-angle series. The rule is
+  now COCO first, marker only when the COCO point is occluded. This stayed
+  invisible for as long as clips were shot side-on, where the two landmarks
+  project almost on top of each other; the 30° angle separates them laterally and
+  the swap became large.
 - **Knee cave is judged per exercise.** The neutral ankle/knee width ratio is not
   the same lift to lift: a squat drives the knees out, so knees wider than the
   feet is the expectation and parity is already a fault (flagged above 0.90); an

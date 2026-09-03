@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>gym-technique-analyzer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#f97316",
+            dark: "#0f172a",
+            card: "#1e293b",
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+  <script src="/static/js/sse.js"></script>
+  <script src="/static/js/reps.js"></script>
+</head>
+<body class="bg-dark text-gray-300 font-sans antialiased min-h-screen">
+  <header class="bg-dark border-b border-gray-800 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-6 py-4 text-center">
+      <div class="text-2xl font-bold text-white tracking-wider">
+        Technique<span class="text-primary">Analyzer</span>
+      </div>
+    </div>
+  </header>
+  {% block content %}{% endblock %}
+</body>
+</html>
